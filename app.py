@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -6,23 +7,14 @@ from google import genai
 
 app = Flask(__name__)
 
-# =====================================================
-# ★ 請在下方三個地方貼上你的金鑰 ★
-# =====================================================
-
-import os
-
 LINE_CHANNEL_SECRET = os.environ.get('LINE_CHANNEL_SECRET')
 LINE_CHANNEL_ACCESS_TOKEN = os.environ.get('LINE_CHANNEL_ACCESS_TOKEN')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-
-# =====================================================
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
 client = genai.Client(api_key=GEMINI_API_KEY)
-
 
 @app.route("/webhook", methods=['POST'])
 def webhook():
@@ -34,11 +26,9 @@ def webhook():
         abort(400)
     return 'OK'
 
-
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     user_msg = event.message.text
-
     try:
         response = client.models.generate_content(
             model='gemini-2.0-flash',
@@ -46,13 +36,12 @@ def handle_message(event):
         )
         reply = response.text
     except Exception as e:
-        reply = '抱歉，我現在有點忙，請稍後再試！'
-
+        print(f'Gemini error: {e}')
+        reply = f'錯誤：{str(e)}'
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=reply)
     )
-
 
 if __name__ == "__main__":
     app.run()
