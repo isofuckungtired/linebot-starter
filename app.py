@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 LINE_CHANNEL_SECRET = ('a5dd19ca75f3aa7164172a9c4729bed1')
 LINE_CHANNEL_ACCESS_TOKEN = ('bmFS85/iNWUXXIBoaH1fF4ovfQfuuGv8U282WwOVP0yUUrCjAC0Gr/hLDtKm1zJwTyISbgPwS8rUSdOn7Za7VtCfbW361iceHASe5BkBaqGQ7OLZaSxyxldqUEsqIkb7KuqlOmmPbrd/b90UR6wfrwdB04t89/1O/w1cDnyilFU=')
-GEMINI_API_KEY = ('請輸入API')
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
